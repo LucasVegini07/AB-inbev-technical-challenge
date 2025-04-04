@@ -236,4 +236,4 @@ The current architecture adopts a simple and efficient approach, combining load 
 
 In the future, as the volume of requests grows, it will be important to consider alternatives to maintain scalability and performance. Since the POST endpoint needs to immediately return the generated ID to the client, the use of full asynchronous processing would not be appropriate, as it would compromise this functionality. However, it is possible to evaluate hybrid strategies, such as moving only less critical parts of the flow to a queue, while maintaining the synchronous return of the ID.
 
-Another possible evolution is the adoption of serverless environments for the API, which could offer greater elasticity and cost optimization. Even so, it is essential to consider cold start as a possible latency point — especially if the application needs to maintain response time below 500ms.v# **Microservice Design Documentation**
+**Microservice Design Documentation**
