@@ -7,7 +7,7 @@ This document describes the architecture, technical decisions, and rationale for
 
 ## **Code Design**
 
-![Layered.png](<https://media-hosting.imagekit.io/eb8e626d36d54e02/Layered.png?Expires=1838379311&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=Fjzs8hv~wdKxePkJzlaigVEWY9fZ4c8~4Jb6fp8gH3YMyFYQemyzfXS~o6V~OdcccYH4QM6XBcHJrRrE~~JNN7KaqccAmf4bAY9JI0XXAflVPeYHFOYbaCnCmvdruU4auzor2dD2zFzEEAhjS6k0Q5JA7fExL9mVAJ8EPrBPcRrlFoR97SwOywZ5CJpy5smXYjt5Jk7FSWl9~QD5Mejp9DbQFKQrj7bopLNjkKlZxzKtUvm9Mcyv9DgJj-L8yLGnxjMoU8JjTJ6hus5wq8gSxsynivrcexmNY25JuoyljNnpysMdzImiK2WwqB7Ob~vkyMxY~Co8XE34d93HR98MRQ__>)
+![Layered.png](<https://lh3.googleusercontent.com/pw/AP1GczOm4Fty8jssr_yLUvfHOO_DGIcsy7Vw9hnmwxiUH7R6B_JVILQqOJRrBsLSWsspI4RekgXMlDDlTrq3dgepiIMsIIoLETE_a6YGi07LuIByrkS5O7XWiKjEOqe3DkCG-Eg5BDuEQlJ0Mg2_GsQOtY73Sw=w1271-h1279-s-no-gm?authuser=0>)
 
 Microservice follows a layered code design, ensuring modularity, maintainability, and separation of concerns
 
@@ -19,7 +19,7 @@ Microservice follows a layered code design, ensuring modularity, maintainability
 
 ## Architecture
 
-![Architecture.png](<https://media-hosting.imagekit.io/eeadbff1e58e4085/Architecture.png?Expires=1838379449&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=BrsS~0ZrSPDHpjBW~spWVXq5KgC7MVGCUQcy2s7vR45LQhR4wUP85kuXgUpSOaJHr3rKeXISJGz1sfyL05wGDOWuhFzMDYvuhFnrY9ZBi2M2R-qO6fpEobjE1UQj5EDwdm3bc7O1P6sAIlGUgEXYiud4XSCURPZfxcWMRRMR9gogmKZgvNfWQiMDO0wcpz9IBck-CxwXuV2QmIYUYAXzBVu7L8LT6d1P6U7yZddRsBymlReGCiTDEL5MEUk6AWLd2xm9MUWV2KTADNIfcDYZtNdh7I6yhK~Muavp4iJS5~-I0uvvgOao-uAxbOUBFfrlsWmGHmgzEBoPmzPe-Z0Tng__>)
+![Architecture.png](<https://lh3.googleusercontent.com/pw/AP1GczPf-xote1l0ArWmPL9PVx27fYGojq32w3opGpgWEJt70RG4w94ampKVqtMpWqxuJEXwEB32T34trBe-Hs9MYHlA1W7zM6LVKLG9vd7FwAXSSVfePuFRWuRwlbVbCwn4Kw2JTH0RKCLE3jJteETbAQTd_g=w905-h1279-s-no-gm?authuser=0>)
 The microservice architecture follows a scalable and distributed model, incorporating the following layers:
 
 1. **Load Balancer:** Distributes requests among microservice instances to ensure high availability.
@@ -31,10 +31,10 @@ The microservice architecture follows a scalable and distributed model, incorpor
 
 ### POST
 
-![Post.png](<https://media-hosting.imagekit.io/bfe80ba37bfd42e0/Post.png?Expires=1838379971&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=eWeaI1NfQhD~88T6ugzbNnEpIutIirCe7XP70HB8rPQ84ENeYacwwbRzL70J0ehWUYw4iAu3A-MLsyJJocD6stIcZV~8SGOvxsG2Wztl1aRGJ2nPk~iRIxo8vBwVFBklBT240Nz56CmQcpVF81oGnGZYooNFDs9XGOILojd~A0GJKPN8vt~xW-~uz2JmlRtcWTgQjSSOx-Zot0t9VDsr15C3WlQYR4uYdGVdr4bEZsE5Y3jD0bHEqr12Q1tdik2I4nwwA9CBw3nmwUYF1VCAcpdrUPCNEcBEp0lnzc2wx51Jk1JH9vzwG2jzNCAymdSiNeUFQneAWRnxxuF52MClDQ__>)
+![Post.png](<https://lh3.googleusercontent.com/pw/AP1GczOJlpBOeaAsuPpvU_0aQ_dOKfrR2BQ1Wta7GnxnxCBMM4xJq14i8oz4qCnEkHyZczBTNCTew73S6Z2zCG5vPzbovcdyrD2mpBP8nFyFDPQv7ic5T8lRp_61bRvuxtcFjrJu_VqG4-1D4GhHb5TpuqWe1w=w837-h1279-s-no-gm?authuser=0>)
 ### GET
 
-![Get.png](<https://media-hosting.imagekit.io/78ed0a218e384d16/Get.png?Expires=1838379972&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=e5HrpHME80v6sNsfkwzWDMXPRKooK9vaCc2BTPEP-iqFotQQuj7WbdumEFDPhCyjuUV29lB3Yj--YhQXTnNQiTzQQ13URyiWxZnsDTkh7aMRGXz3XPmAcocKyFTy3nUrT8nH-M0c4my5CAEewWjSoJZ69WE8KvGX-PNoQUM0mztP-5rOm1lTqj~6-DsdwaeQ9k6xFRcm8PRqwMtCaNT0c8B9yb2oqlMN9eSQBgRqFu7gkJwcFPV9RGHl0E2aQuILzRksapCsIBPKT-2FiofUKmdM2coUR7cXb651TgZn4bk~SuzmUX2kiCCQbvKk5Q0GxpMhkSqTrDBCLqn9DUIIHA__>)
+![Get.png](<https://lh3.googleusercontent.com/pw/AP1GczNFvE7SrTIbsxH_KuiClqNlXn_ALMY2ahMFO-9DP5nju1omZIwzdq47hYaX1n02aigjo2Dme-gF0WzLRj7945DR84u_mhj7q_z8R7tSn-SFgQZBBjUKhxDxgFALLC_qfRg8xfhWE-rg7mEh5lL5MGPvbA=w640-h1278-s-no-gm?authuser=0>)
 ### Containerization
 
 The application will be containerized using Docker to ensure portability and ease of deployment.
@@ -165,7 +165,7 @@ The CI/CD pipeline automates testing, building, and deployment.
 
 ### Workflow YAML
 
-![GitHub Actions.png](<https://media-hosting.imagekit.io/866dca1fe3cd4978/GitHub%20Actions.png?Expires=1838380016&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=CbgTC6m1MJOiiZcofkaKKAUoda7QJ4r2NKcKkVa3Q1KjEl8xIPR6NCRG2r79W6DBK-jhcEw0gwnc7FP7KpiA58WbXxTJB1N7LjhGiEsccJ7q6jpxZvrRWncEi7R3BM4-Nk~3kunkvcVulmfSX4X-KIY7NeBGvRP3dhhvZHus6PxEKKAWq~PCSxtocgYPMRAVlGqDs202KwxaIxDIue-sZq3GzmdWO0XSN9DxnTKbjJ4LDjisc13BJo1Q7wPxT0hlNcQBMCX0f7VAPAFmvYCFkNrp39WI0wxzM-rQpneYiWmkJrMyppHdtcB~Xm7Dt0lkUNnQwQWtwGgF8WILzgehTw__>)
+![GitHub Actions.png](<https://lh3.googleusercontent.com/pw/AP1GczPw-wFCrBuPfAlmmIWzbJvA7J59tzwZRF9LCT2J9g8OjRoHZ65dg3TWl_FoyXQi5mpEvleJ29Oq6ep8XkYlduf5k718dffj7al9_K03lyt0Wcmoc0feHtRmFLN3BJarefkiy6F_jnXKu9iFBTsFyCtaEw=w541-h1278-s-no-gm?authuser=0>)
 
 ```yaml
 name: ab-inbev-ci-cd-go-workflow
