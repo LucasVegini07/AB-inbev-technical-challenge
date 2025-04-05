@@ -24,21 +24,24 @@ jobs:
           push: true
           tags: |
             ${{ secrets.DOCKER_HUB_USER }}/ab-inbev:latest
+
   deploy:
     runs-on: ubuntu-22.04
     needs: [build-and-push]
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set Kubernetes context
-        uses: Azure/k8s-set-context@v3
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.K8S_CONFIG }}
+      - name: Decode kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.K8S_CONFIG }}" | base64 -d > $HOME/.kube/config
+        shell: bash
 
-      - name: Deploy to Kind cluster
+      - name: Deploy to Kubernetes
         uses: Azure/k8s-deploy@v4
         with:
           images: ${{ secrets.DOCKER_HUB_USER }}/ab-inbev:latest
           manifests: |
             k8s/deployment.yaml
+        env:
+          KUBECONFIG: $HOME/.kube/config
