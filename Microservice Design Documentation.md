@@ -15,7 +15,7 @@ O microsserviço utiliza o modelo em camadas, que incentiva a organização, tes
 
 **Go (Golang):** Devido à execução de baixa latência. Como nosso objetivo de desempenho é ter todos os tempos de resposta da API abaixo de 500ms, o gerenciamento eficiente de memória e execução compilada do Go nos oferece a velocidade e escalabilidade que precisamos.
 
-**MongoDB:** Escolhido por sua flexibilidade de esquema e capacidade de armazenar documentos JSON nativamente. O MongoDB leva a um crescimento horizontal mais rápido para nosso desenvolvimento, já que nosso modelo de dados não requer quaisquer relacionamentos complexos.
+**MongoDB:** Como modelo de dados não requer relacionamentos complexos, o mongo foi escolhido por sua flexibilidade de esquema e capacidade de armazenar documentos JSON nativamente.
 
 ## Arquitetura 
 
@@ -232,16 +232,14 @@ A pipeline consiste em duas partes: CI (Integração Contínua) e CD (Entrega Co
 
 ## Estratégia de Testes
 
-Seguimos uma Pirâmide de Testes para nossa estratégia de teste. Nosso foco principal foi em testes unitários para garantir que as funcionalidades principais, como validação de entrada e persistência de dados, estavam funcionando conforme o esperado.
+Seguimos uma Pirâmide de Testes para nossa estratégia de teste. Inicialmente vamos garantir que as principais funcionalidades, como validação de entrada e persistência de dados, estavam funcionando corretamente.
 
-Também realizaremos testes de desempenho com ferramentas como K6, que podem simular múltiplos usuários existentes ao mesmo tempo, para garantir que o alvo de resposta abaixo de 500ms esteja sendo alcançado.
+Iremos realizar testes de desempenho com ferramentas como K6, que podem simular várias requisições ao mesmo tempo, para garantir que o tempo de resposta esteja abaixo de 500ms.
 
-Além disso, a observabilidade será fundamental: forneceremos rastreamento em tempo real de métricas da aplicação com Prometheus e Grafana, e configuraremos alertas para alto uso de CPU ou respostas lentas, garantindo a saúde do sistema e ação rápida em caso de falhas.
+Além disso, a observabilidade será fundamental: forneceremos rastreamento em tempo real de métricas da aplicação com Prometheus e Grafana, e criaremos alertas para o consumo de CPU ou respostas lentas, garantindo a saúde do sistema e para podermos atuar rapidamente em casos de falha.
 
 ## Trade-offs e Considerações Futuras
 
-Na nossa arquitetura atual, estamos seguindo uma arquitetura simples, porém eficiente, que consiste em balanceador de carga + API em Go + Redis para caching + MongoDB para armazenamento. Isso também fornece alta disponibilidade, baixa latência e facilidade de operação.
+Nesse projeto estamos seguindo uma arquitetura simples, porém eficiente. Ela nos fornece alta disponibilidade, baixa latência e facilidade de operação.
 
-No futuro, pretendemos:
-
-Se o sistema enfrentar um alto volume de solicitações, podemos usar a mensageria com o Kafka para processar assincronamente. Nesse caso, devemos retornar pelo menos o ID do recurso criado (por exemplo, POST) para o cliente, para que ele possa ter uma referência imediata enquanto espera que a informação seja processada no back-end.
+No futuro, se o sistema enfrentar um alto throughput, podemos usar a mensageria com o Kafka para processar assincronamente. Nesse caso, devemos retornar pelo menos o ID do recurso criado para o cliente, para que ele possa ter uma referência imediata enquanto espera que a informação seja processada de forma assíncrona.
