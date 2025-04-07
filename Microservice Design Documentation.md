@@ -1,31 +1,32 @@
 
-# **Microservice Design Documentation**
+# **Desafio AB-inbev**
 
-# Introduction
+# Introdução
 
-This document describes the architecture, technical decisions, and rationale for designing a scalable, high-performance microservice.
+Este documento detalha a arquitetura, as escolhas técnicas e a justificativa para o projeto de um microsserviço escalável e de alto desempenho.
 
-## **Code Design**
+## **Design do Código**
 
 ![Layered.png](<https://lh3.googleusercontent.com/pw/AP1GczOm4Fty8jssr_yLUvfHOO_DGIcsy7Vw9hnmwxiUH7R6B_JVILQqOJRrBsLSWsspI4RekgXMlDDlTrq3dgepiIMsIIoLETE_a6YGi07LuIByrkS5O7XWiKjEOqe3DkCG-Eg5BDuEQlJ0Mg2_GsQOtY73Sw=w1271-h1279-s-no-gm?authuser=0>)
 
-Microservice follows a layered code design, ensuring modularity, maintainability, and separation of concerns
+Durante o desenvolvimento, vamos seguir um padrão arquitetural em camadas, com o propósito de garantir a separação de responsabilidades do sistema conforme a imagem acima. A camada de API se comunica com a camada de serviço/domínio, e a camada de serviço/domínio se comunica com a camada de banco de dados. Essa abordagem proporciona uma maior modularização, facilitando tanto a manutenção do sistema quanto a criação de testes, promovendo um desenvolvimento mais ágil e organizado.
 
-### **Technology Justification**
 
-**Go (Golang)** was selected for its high concurrency support and low-latency execution. Given our performance goal of keeping API response times under 500ms, Go’s efficient memory management and compiled execution provide the necessary speed and scalability.
+### **Justificativa Tecnológica**
 
-**MongoDB** was chosen for its schema flexibility and ability to store JSON documents natively. Since our data model does not require complex relationships, MongoDB enables faster development and efficient horizontal scaling
+**Go (Golang):** Optamos por essa linguagem devido à sua capacidade de operação com baixa latência. Como precisamos manter o tempo de resposta abaixo de 500ms, o Go se torna a linguagem ideal para o funcionamento do sistema.
 
-## Architecture
+**MongoDB:** Já o Mongo foi escolhido pela sua capacidade de armazenar JSON de forma nativa. Como nossos dados não exigem relacionamentos complexos, a escolha por esse banco possibilita um desenvolvimento mais ágil e uma escalabilidade horizontal eficiente.
+
+## Arquitetura 
 
 ![Architecture.png](<https://lh3.googleusercontent.com/pw/AP1GczPf-xote1l0ArWmPL9PVx27fYGojq32w3opGpgWEJt70RG4w94ampKVqtMpWqxuJEXwEB32T34trBe-Hs9MYHlA1W7zM6LVKLG9vd7FwAXSSVfePuFRWuRwlbVbCwn4Kw2JTH0RKCLE3jJteETbAQTd_g=w905-h1279-s-no-gm?authuser=0>)
-The microservice architecture follows a scalable and distributed model, incorporating the following layers:
+A arquitetura da nossa aplicação segue um modelo escalável e distribuído, composto pelos seguinte componentes:
 
-1. **Load Balancer:** Distributes requests among microservice instances to ensure high availability.
-2. **API Layer (Go):** Responsible for validation and processing of requests.
-3. **Cache Layer (Redis):** Speeds up queries by reducing database access.
-4. **Database Layer (MongoDB with Sharding and Replica Sets):** Ensures high availability and fault tolerance. Since the system will initially have only two endpoints (POST and GET), database contention and lock-in issues are not a concern. Sharding is not required at this stage, simplifying database operations
+1. **Load Balancer:** Distribui as requisições entre os servidores, garantindo alta disponibilidade.
+2. **API Layer (Go):** Responsável por validar e processar as requisições do sistema.
+3. **Cache Layer (Redis):** Otimiza a busca pelas dados minizando o acesso direto ao banco de dados.
+4. **Database Layer (MongoDB with Replica Sets):**  "Proporciona alta disponibilidade e consistência. Como teremos apenas dois endpoints, não haverá problemas com concorrência, e o risco de inconsistência será muito menor. Além disso, como os dados não podem ser editados, sua integridade permanecerá intacta após a criação. 
 
 ### Data Flow
 
@@ -37,7 +38,7 @@ The microservice architecture follows a scalable and distributed model, incorpor
 ![Get.png](<https://lh3.googleusercontent.com/pw/AP1GczNFvE7SrTIbsxH_KuiClqNlXn_ALMY2ahMFO-9DP5nju1omZIwzdq47hYaX1n02aigjo2Dme-gF0WzLRj7945DR84u_mhj7q_z8R7tSn-SFgQZBBjUKhxDxgFALLC_qfRg8xfhWE-rg7mEh5lL5MGPvbA=w640-h1278-s-no-gm?authuser=0>)
 ### Containerization
 
-The application will be containerized using Docker to ensure portability and ease of deployment.
+A aplicação será dockernizada, o que tornará o processo de implantação mais eficiente e simples
 
 ### Dockerfile
 
@@ -57,7 +58,7 @@ ENTRYPOINT ["/server"]
 EXPOSE 8080
 ```
 
-This Dockerfile uses multi-stage build to create a small and secure final image. In the first stage, it uses a base Go image to compile the application with all necessary dependencies. In the second stage, it starts with a minimal image from scratch and copies only the compiled binary, resulting in a lightweight container with no extra tools or dependencies. This minimal setup helps reduce startup time and memory usage, which are essential to achieving the performance goal of keeping API responses consistently under 500ms.
+Este Dockerfile usa multi-stage building para criar uma imagem final mais leve e segura. Como a baixa latência é crucial neste projeto, essa abordagem se tornou necessária para otimizar o consumo de recursos.
 
 ### Docker Compose
 
@@ -83,11 +84,9 @@ mongodb:
 image: mongo:latest
 ```
 
-This Docker Compose file defines a local development environment with three services: the main Go application (app), a Redis instance (redis), and a MongoDB instance (mongodb). It simplifies local testing by creating all necessary dependencies with a single command. While this setup is ideal for local development and testing, in a production environment, Redis and MongoDB would typically be managed separately, using dedicated infrastructure or managed services to ensure scalability, availability, and security.
-
 ## Deployment with Kubernetes
 
-The application will be deployed in a Kubernetes cluster using the following configurations:
+A aplicação será implantada em Kubernetes com os seguintes arquivos de configuração:
 
 ### Deployment YAML
 
@@ -100,15 +99,15 @@ spec:
   replicas: 3
   selector:
     matchLabels:
-      app: microservice
+      app: goserver
   template:
     metadata:
       labels:
-        app: microservice
+        app: goserver
     spec:
       containers:
         - name: app
-          image: ${{ secrets.DOCKER_HUB_USER }}/ab-inbev-go:latest
+          image: ${{ secrets.DOCKER_HUB_USER }}/ab-inbev:latest
           ports:
             - containerPort: 8080
 
@@ -126,10 +125,10 @@ spec:
     app: goserver
   type: ClusterIP
   ports:
-  - name: goserver-service
-    port: 8080
-    targetPort: 8080
-    protocol: TCP
+    - name: goserver-service
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
 
 ```
 
@@ -157,11 +156,11 @@ spec:
 
 ```
 
-To scale our application, we will be using **Horizontal Pod Autoscaler (HPA)**. Initially, to ensure performance and availability, the application will run with a **minimum of 3 pods**. The HPA can scale up to a **maximum of 10 pods**, based on resource usage. It constantly monitors the average CPU usage, and if it goes **above 80%**, new pods will be automatically added to handle the increased load. This ensures that our service can efficiently adapt to different levels of demand while maintaining responsiveness.
+Este HPA vai garantir a escalabilidade da aplicação com base no uso de CPU. Inicialmente, serão utilizados 3 pods, com possibilidade de escalar para até 10. Quando as réplicas atingirem 80% do uso de CPU, o autoscale acionará a escalabilidade automática. Esses parâmetros poderão ser ajustados conforme identificarmos a necessidade de ampliar ainda mais o projeto.
 
 ## CI/CD with GitHub Actions
 
-The CI/CD pipeline automates testing, building, and deployment.
+A pipeline de CI/CD automatiza testes, build e deploy da aplicação.
 
 ### Workflow YAML
 
@@ -176,64 +175,82 @@ on:
       - main
 
 jobs:
-  ci:
+  build-and-push:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
-        with:
-          go-version: 1.15
-      - run: go test
-      - run: go run main.go
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ab-inbev-go:latest
+      - uses: actions/checkout@v3
 
-  cd:
-    runs-on: ubuntu-latest
-    needs: ci  # Garante que o deploy só roda depois do build
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-      - name: Set up Kubectl
-        uses: azure/k8s-set-context@v1
+      - name: Docker Login
+        uses: docker/login-action@v2
         with:
-          kubeconfig: ${{ secrets.KUBECONFIG }}
-      - name: Deploy
+          username: ${{ secrets.DOCKER_HUB_USER }}
+          password: ${{ secrets.DOCKER_HUB_PWD }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USER }}/ab-inbev:latest
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Kubeconfig
         run: |
-          kubectl apply -f kubernetes/deployment.yaml
-          kubectl apply -f kubernetes/service.yaml
-          kubectl apply -f kubernetes/hpa.yaml
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.K8S_CONFIG }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.29.0'
+
+      - name: Verify cluster access
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+
 ```
 
-Our CI/CD pipeline is divided into two main stages. In the first stage (CI), we set up the environment, run automated tests, and then build and push the Docker image to a Docker registry. This ensures that each commit to the main branch results in a new, tested container image available for deployment.
+A pipeline está dividida em duas etapas: CI (Integração Contínua) e CD (Entrega Contínua).
 
-In the second stage (CD), we use a Kubernetes configuration file (kubeconfig) that is securely stored in our secrets, allowing us to connect to the target cluster. After that, we apply the Kubernetes YAML files we defined earlier to deploy or update the application.
+Na etapa de CI, o código é testado automaticamente e o container é construído e enviado para o DockerHub. Na etapa de CD, as configurações do Kubernetes são aplicadas ao cluster para implantar a versão mais recente da aplicação.
 
-## Testing Strategy
 
-We adopt a testing strategy based on the Test Pyramid, focusing primarily on unit tests to validate core functionalities such as input validation and data persistence. The goal is to ensure that all critical paths are covered, maintaining reliability and confidence in the application logic. While the current version prioritizes unit testing due to the simplicity of the codebase, the strategy also has space for future implementation of integration tests.
+## Estratégia de Testes
 
-To validate performance goals, we plan to use tools like K6 to simulate concurrent users and ensure the application maintains response times under 500ms, as expected.
 
-In addition, **observability** will play a key role in our strategy. By integrating tools such as **Prometheus** and **Grafana**, we can monitor application metrics in real-time and configure **alerts** to notify us of critical issues like high CPU usage or abnormal response times—helping us maintain system health and react quickly to incidents
+Adotamos uma estratégia de testes baseada na Pirâmide de Testes, priorizando testes unitários para validar funcionalidades principais, como validação de entradas e persistência de dados.
 
-## Trade-Offs and Future Considerations
+Embora a versão atual se concentre em testes unitários, planejamos adicionar testes de integração no futuro, conforme a complexidade aumentar.
 
-The current architecture adopts a simple and efficient approach, combining load balancing, a Go API, Redis caching and a MongoDB database. This structure ensures high availability, low latency and operational simplicity, making it ideal for the current application requirements.
+Também realizaremos testes de desempenho com ferramentas como o K6, simulando múltiplos usuários concorrentes para validar a meta de resposta abaixo de 500ms.
 
-In the future, as the volume of requests grows, it will be important to consider alternatives to maintain scalability and performance. Since the POST endpoint needs to immediately return the generated ID to the client, the use of full asynchronous processing would not be appropriate, as it would compromise this functionality. However, it is possible to evaluate hybrid strategies, such as moving only less critical parts of the flow to a queue, while maintaining the synchronous return of the ID.
+Além disso, a observabilidade será essencial: com Prometheus e Grafana, monitoraremos métricas da aplicação em tempo real e configuraremos alertas para uso de CPU elevado ou lentidão nas respostas, garantindo a saúde do sistema e ação rápida diante de falhas.
+
+## Trade-offs e Considerações Futuras
+
+A arquitetura atual adota uma abordagem simples e eficiente, combinando balanceamento de carga, API em Go, cache com Redis e armazenamento em MongoDB. Essa estrutura garante alta disponibilidade, baixa latência e facilidade operacional.
+
+No futuro, pretendemos:
+
+Implementar particionamento (sharding) no MongoDB.
+
+Utilizar mensageria (como Kafka) para processamentos assíncronos.
+
+Aplicar testes automatizados de carga em ambientes controlados.
+
+Adotar autenticação e autorização com OAuth ou JWT.
+
+Aplicar práticas de observabilidade avançada com OpenTelemetry.
 
 **Microservice Design Documentation**
