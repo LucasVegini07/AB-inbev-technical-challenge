@@ -1,15 +1,15 @@
-# High Performance Microservice
+# Microsserviço de Alta Performance
 
-This project presents a high-performance microservice architecture designed to be fast, scalable, and easy to maintain.
+Este projeto apresenta uma arquitetura de microserviços centrada no desempenho, que é escalável e fácil de manter.
 
-## 1. Overview
+## 1. Visão Geral
 
-The microservice exposes two endpoints:
+Este microserviço possui duas rotas principais:
 
-- `POST /resource`: Creates a new resource.
-- `GET /resource/:id`: Retrieves a resource by ID.
+- `POST /resource`: Para criar um novo recurso.
+- `GET /resource/:id`: Obter um recurso pelo ID.
 
-### Key Technologies
+### Tecnologias Utilizadas
 
 - **Go**
 - **MongoDB**
@@ -17,37 +17,13 @@ The microservice exposes two endpoints:
 - **Docker**
 - **Kubernetes**
 
-## 2. Setup
+## 2. Como Executar
 
-### Local Development
+### Ambiente Local
 
-Make sure you have Docker and Docker Compose installed.
+Certifique-se de ter Docker e Docker Compose instalados.
+
+Para iniciar o ambiente local:
 
 ```bash
 docker-compose up --build
-```
-
-### Kubernetes Deployment
-
-Apply the manifests in the `k8s/` folder:
-
-```bash
-kubectl apply -f k8s/
-```
-
-## 3. Technical Decisions
-
-- **Go** was selected for its performance and low memory usage, which helps meet the 500ms response time goal.
-- **MongoDB**  was chosen for its document model. As we’re storing and retrieving JSON, it fits perfectly.
-- With only two endpoints, we minimize locking and complexity at the database level.
-- **Redis** improves performance by caching frequent reads.
-- We’ve chosen to start simple and scale features (like sharding) only when needed.
-
-## 4. CI/CD
-
-The project uses GitHub Actions for:
-
-- Building and testing the application.
-- Deploying to Kubernetes clusters.
-
----

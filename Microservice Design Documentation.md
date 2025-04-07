@@ -3,32 +3,32 @@
 
 # Introdução
 
-Este documento detalha a arquitetura, as escolhas técnicas e a justificativa para o projeto de um microsserviço escalável e de alto desempenho.
+Este documento descreve a arquitetura, escolhas técnicas e raciocínio no design de um microsserviço escalável e de alto desempenho.
 
 ## **Design do Código**
 
 ![Layered.png](<https://lh3.googleusercontent.com/pw/AP1GczOm4Fty8jssr_yLUvfHOO_DGIcsy7Vw9hnmwxiUH7R6B_JVILQqOJRrBsLSWsspI4RekgXMlDDlTrq3dgepiIMsIIoLETE_a6YGi07LuIByrkS5O7XWiKjEOqe3DkCG-Eg5BDuEQlJ0Mg2_GsQOtY73Sw=w1271-h1279-s-no-gm?authuser=0>)
 
-Durante o desenvolvimento, vamos seguir um padrão arquitetural em camadas, com o propósito de garantir a separação de responsabilidades do sistema conforme a imagem acima. A camada de API se comunica com a camada de serviço/domínio, e a camada de serviço/domínio se comunica com a camada de banco de dados. Essa abordagem proporciona uma maior modularização, facilitando tanto a manutenção do sistema quanto a criação de testes, promovendo um desenvolvimento mais ágil e organizado.
-
+O microsserviço utiliza o modelo em camadas, que incentiva a organização, testabilidade e desacoplamento entre os componentes.
 
 ### **Justificativa Tecnológica**
 
-**Go (Golang):** Optamos por essa linguagem devido à sua capacidade de operação com baixa latência. Como precisamos manter o tempo de resposta abaixo de 500ms, o Go se torna a linguagem ideal para o funcionamento do sistema.
+**Go (Golang):** Devido à execução de baixa latência. Como nosso objetivo de desempenho é ter todos os tempos de resposta da API abaixo de 500ms, o gerenciamento eficiente de memória e execução compilada do Go nos oferece a velocidade e escalabilidade que precisamos.
 
-**MongoDB:** Já o Mongo foi escolhido pela sua capacidade de armazenar JSON de forma nativa. Como nossos dados não exigem relacionamentos complexos, a escolha por esse banco possibilita um desenvolvimento mais ágil e uma escalabilidade horizontal eficiente.
+**MongoDB:** Escolhido por sua flexibilidade de esquema e capacidade de armazenar documentos JSON nativamente. O MongoDB leva a um crescimento horizontal mais rápido para nosso desenvolvimento, já que nosso modelo de dados não requer quaisquer relacionamentos complexos.
 
 ## Arquitetura 
 
 ![Architecture.png](<https://lh3.googleusercontent.com/pw/AP1GczPf-xote1l0ArWmPL9PVx27fYGojq32w3opGpgWEJt70RG4w94ampKVqtMpWqxuJEXwEB32T34trBe-Hs9MYHlA1W7zM6LVKLG9vd7FwAXSSVfePuFRWuRwlbVbCwn4Kw2JTH0RKCLE3jJteETbAQTd_g=w905-h1279-s-no-gm?authuser=0>)
-A arquitetura da nossa aplicação segue um modelo escalável e distribuído, composto pelos seguinte componentes:
 
-1. **Load Balancer:** Distribui as requisições entre os servidores, garantindo alta disponibilidade.
-2. **API Layer (Go):** Responsável por validar e processar as requisições do sistema.
-3. **Cache Layer (Redis):** Otimiza a busca pelas dados minizando o acesso direto ao banco de dados.
-4. **Database Layer (MongoDB with Replica Sets):**  "Proporciona alta disponibilidade e consistência. Como teremos apenas dois endpoints, não haverá problemas com concorrência, e o risco de inconsistência será muito menor. Além disso, como os dados não podem ser editados, sua integridade permanecerá intacta após a criação. 
+A arquitetura de nossa aplicação é escalável e distribuída, que pode ser dividida em componentes principais que são:
 
-### Data Flow
+1. **Balanceador de Carga:** Envia solicitações entre instâncias de qualquer microsserviço.
+2. **Camada API (Go):** Onde as solicitações são validadas e processadas.
+3. **Camada de Cache (Redis):** Consultas mais rápidas com menos chamadas para o banco de dados.
+4. **Camada de Banco de Dados:**  "Como temos apenas 2 endpoints, conseguimos garantir uma alta disponibilidade e consistência nos dados. 
+
+### Fluxo de Dados
 
 ### POST
 
@@ -36,9 +36,10 @@ A arquitetura da nossa aplicação segue um modelo escalável e distribuído, co
 ### GET
 
 ![Get.png](<https://lh3.googleusercontent.com/pw/AP1GczNFvE7SrTIbsxH_KuiClqNlXn_ALMY2ahMFO-9DP5nju1omZIwzdq47hYaX1n02aigjo2Dme-gF0WzLRj7945DR84u_mhj7q_z8R7tSn-SFgQZBBjUKhxDxgFALLC_qfRg8xfhWE-rg7mEh5lL5MGPvbA=w640-h1278-s-no-gm?authuser=0>)
-### Containerization
 
-A aplicação será dockernizada, o que tornará o processo de implantação mais eficiente e simples
+### Containerização 
+
+Vamos containerizar a aplicação com Docker para portabilidade
 
 ### Dockerfile
 
@@ -58,7 +59,7 @@ ENTRYPOINT ["/server"]
 EXPOSE 8080
 ```
 
-Este Dockerfile usa multi-stage building para criar uma imagem final mais leve e segura. Como a baixa latência é crucial neste projeto, essa abordagem se tornou necessária para otimizar o consumo de recursos.
+Este Dockerfile utiliza build em múltiplas etapas para gerar uma imagem final leve e segura. A primeira etapa compila a aplicação usando uma imagem base do Go. A segunda utiliza a imagem "scratch", copiando apenas o binário final, o que resulta em uma imagem pequena, sem ferramentas ou dependências adicionais — ideal para inicialização rápida e baixo consumo de memória.
 
 ### Docker Compose
 
@@ -84,9 +85,9 @@ mongodb:
 image: mongo:latest
 ```
 
-## Deployment with Kubernetes
+## Implantação com Kubernetes
 
-A aplicação será implantada em Kubernetes com os seguintes arquivos de configuração:
+Vamos implantar a aplicação em um cluster do Kubernetes, abaixo estão os arquivos de configuração:
 
 ### Deployment YAML
 
@@ -156,11 +157,11 @@ spec:
 
 ```
 
-Este HPA vai garantir a escalabilidade da aplicação com base no uso de CPU. Inicialmente, serão utilizados 3 pods, com possibilidade de escalar para até 10. Quando as réplicas atingirem 80% do uso de CPU, o autoscale acionará a escalabilidade automática. Esses parâmetros poderão ser ajustados conforme identificarmos a necessidade de ampliar ainda mais o projeto.
+Aplicação escalável no uso de CPU. A proposta exige no mínimo 3 pods inicialmente, e tem o potencial de escalar até 10 pods. O autoscale monitora o uso médio de CPU e aumentará o número de réplicas se ultrapassar 80%.
 
 ## CI/CD with GitHub Actions
 
-A pipeline de CI/CD automatiza testes, build e deploy da aplicação.
+A pipeline CI/CD automatiza as etapas de teste, construção e implantação da aplicação.
 
 ### Workflow YAML
 
@@ -227,36 +228,20 @@ jobs:
 
 ```
 
-A pipeline está dividida em duas etapas: CI (Integração Contínua) e CD (Entrega Contínua).
-
-Na etapa de CI, o código é testado automaticamente e o container é construído e enviado para o DockerHub. Na etapa de CD, as configurações do Kubernetes são aplicadas ao cluster para implantar a versão mais recente da aplicação.
-
+A pipeline consiste em duas partes: CI (Integração Contínua) e CD (Entrega Contínua). O código é testado e o contêiner é construído e enviado para o Docker Hub durante a fase de CI. Durante a fase de CD, as configurações do Kubernetes são enviadas ao cluster.
 
 ## Estratégia de Testes
 
+Seguimos uma Pirâmide de Testes para nossa estratégia de teste. Nosso foco principal foi em testes unitários para garantir que as funcionalidades principais, como validação de entrada e persistência de dados, estavam funcionando conforme o esperado.
 
-Adotamos uma estratégia de testes baseada na Pirâmide de Testes, priorizando testes unitários para validar funcionalidades principais, como validação de entradas e persistência de dados.
+Também realizaremos testes de desempenho com ferramentas como K6, que podem simular múltiplos usuários existentes ao mesmo tempo, para garantir que o alvo de resposta abaixo de 500ms esteja sendo alcançado.
 
-Embora a versão atual se concentre em testes unitários, planejamos adicionar testes de integração no futuro, conforme a complexidade aumentar.
-
-Também realizaremos testes de desempenho com ferramentas como o K6, simulando múltiplos usuários concorrentes para validar a meta de resposta abaixo de 500ms.
-
-Além disso, a observabilidade será essencial: com Prometheus e Grafana, monitoraremos métricas da aplicação em tempo real e configuraremos alertas para uso de CPU elevado ou lentidão nas respostas, garantindo a saúde do sistema e ação rápida diante de falhas.
+Além disso, a observabilidade será fundamental: forneceremos rastreamento em tempo real de métricas da aplicação com Prometheus e Grafana, e configuraremos alertas para alto uso de CPU ou respostas lentas, garantindo a saúde do sistema e ação rápida em caso de falhas.
 
 ## Trade-offs e Considerações Futuras
 
-A arquitetura atual adota uma abordagem simples e eficiente, combinando balanceamento de carga, API em Go, cache com Redis e armazenamento em MongoDB. Essa estrutura garante alta disponibilidade, baixa latência e facilidade operacional.
+Na nossa arquitetura atual, estamos seguindo uma arquitetura simples, porém eficiente, que consiste em balanceador de carga + API em Go + Redis para caching + MongoDB para armazenamento. Isso também fornece alta disponibilidade, baixa latência e facilidade de operação.
 
 No futuro, pretendemos:
 
-Implementar particionamento (sharding) no MongoDB.
-
-Utilizar mensageria (como Kafka) para processamentos assíncronos.
-
-Aplicar testes automatizados de carga em ambientes controlados.
-
-Adotar autenticação e autorização com OAuth ou JWT.
-
-Aplicar práticas de observabilidade avançada com OpenTelemetry.
-
-**Microservice Design Documentation**
+Se o sistema enfrentar um alto volume de solicitações, podemos usar a mensageria com o Kafka para processar assincronamente. Nesse caso, devemos retornar pelo menos o ID do recurso criado (por exemplo, POST) para o cliente, para que ele possa ter uma referência imediata enquanto espera que a informação seja processada no back-end.
