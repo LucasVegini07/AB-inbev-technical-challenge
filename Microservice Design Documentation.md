@@ -178,6 +178,11 @@ jobs:
   build-and-push:
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+      - run: go test
+
       - uses: actions/checkout@v3
 
       - name: Docker Login
@@ -217,7 +222,8 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml --namespace default
+
 
 ```
 
